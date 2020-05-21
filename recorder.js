@@ -13,13 +13,10 @@ class Recorder {
   start() {
 
     this.debug("recording start.");
-	
-
     this.startRecording();
 
   }
 
-  // xx分感覚でスライスする、PC音も録音する、
   async startRecording() {
 
     this.videoStream = await navigator.mediaDevices.getDisplayMedia({
@@ -53,7 +50,7 @@ class Recorder {
      if(this.combinedStream != null) { this.combinedStream.getTracks().forEach(track => track.stop());}
      if(this.audioStream != null) { this.audioStream.getTracks().forEach(track => track.stop());}
      if(this.videoStream != null) { this.videoStream.getTracks().forEach(track => track.stop());}
-     this.mediaRecorder.stop();
+     if(this.mediaRecorder != null && this.mediaRecorder.state != "inactive") { this.mediaRecorder.stop();}
   }
 
   createFileName() {

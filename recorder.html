@@ -2,6 +2,7 @@
 <head>
 <title>RecordingTest</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -12,42 +13,54 @@ window.onload = function(){
 
   var message = document.getElementById("message");
   var recorder = new Recorder();
+  var recordingStartTime;
+  var timer;
 
   document.getElementById("start").onclick = function(){
 
     message.innerHTML=txt = "now recording...";
     recorder.start();
+    document.getElementById("start").disabled = true;
+    recordingStartTime = new Date().getTime();
+    timer = setInterval( () => {
+      var elapsedTime = new Date().getTime() - recordingStartTime;
+      document.getElementById("elapsedTimeView").innerText = Math.floor((elapsedTime/1000/60)) + ":" + ("00" + Math.floor((elapsedTime/1000%60))).slice(-2) + ":" + ("000" + Math.floor((elapsedTime%1000))).slice(-3)
+      message.innerHTML=txt = "now recording..."
+    },1);
   }
 
   document.getElementById("stop").onclick = function(){
 
     recorder.stopRecording();
+    document.getElementById("start").disabled = false;
+    if(timer != null) { clearInterval(timer); }
     message.innerHTML=txt = "";
-  }
-
-  document.getElementById("capture").onclick = function(){
-
-
-
   }
 
 
 }
 </script>
 </head>
-<body>
+<body style="margin:10px">
 
 <hr>
+
 <div>
   <h4>Recording</h4>
-  <input type="button" id="start" value="start"> <input type="button" id="stop" value="stop">
+  <i class="fas fa-record-vinyl"></i>
+  <div id="elapsedTimeView" style="color:red;font-size:20px;font-weight: bold;margin-left:5px"></div>
   <div id="message"></div>
+  <div id="debug"></div>
 </div>
-<hr>
-<input type="button" id="capture" value="もしプレゼンを同時に開始したら">
 
-<div id="debug"></div>
-<a id="downloadlink">download</a>
+<hr>
+  
+<div>
+  <h4>Capturing</h4>
+  <input type="button" id="captureStart" value="start"> <input type="button" id="captureStop" value="stop">
+</div>
+
+<hr>
 
 </body>
 </html>
