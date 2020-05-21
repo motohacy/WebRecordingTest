@@ -24,7 +24,6 @@ window.onload = function(){
     timer = setInterval( () => {
       var elapsedTime = new Date().getTime() - recordingStartTime;
       document.getElementById("elapsedTimeView").innerText = Math.floor((elapsedTime/1000/60)) + ":" + ("00" + Math.floor((elapsedTime/1000%60))).slice(-2) + ":" + ("000" + Math.floor((elapsedTime%1000))).slice(-3)
-      message.innerHTML=txt = "now recording..."
     },1);
   }
 
@@ -46,6 +45,7 @@ window.onload = function(){
 
 <div>
   <h4>Recording</h4>
+  <input type="button" id="start" value="start"> <input type="button" id="stop" value="stop">
   <div id="elapsedTimeView" style="color:red;font-size:20px;font-weight: bold;margin-left:5px"></div>
   <div id="message"></div>
   <div id="debug"></div>
