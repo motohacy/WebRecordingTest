@@ -6,12 +6,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script language="JavaScript" type="text/javascript" src="recorder.js"></script>
-<script language="JavaScript" type="text/javascript">
+<script language="JavaScript" type="text/javascript" src="capturer.js"></script>
 
-window.onload = function(){
+</head>
+<body style="margin:10px">
+<hr>
 
-  var message = document.getElementById("message");
+<div>
+  <h4>Recording</h4>
+  <input type="button" id="start" value="start"> <input type="button" id="stop" value="stop">
+  <div id="elapsedTimeView" style="color:red;font-size:20px;font-weight: bold;margin-left:5px"></div>
+  <div id="message"></div>
+  <div id="debug"></div>
+</div>
+
+<hr>
+  
+<div>
+  <h4>Capturing</h4>
+  <input type="button" id="captureStart" value="start"> <input type="button" id="captureStop" value="stop">
+  <div id="captureViewWrapper" style="width:960px;height:540px;overflow-x:scroll;overflow-y:scroll;align-items:center;justify-content:center;margin:0px;padding:0px;display:none;">
+    <canvas id="captureViewCanvas" width="100%"></canvas>
+    <canvas id="captureViewCanvasBuffer" width="100%" style="display:none;"></canvas>
+  </div>
+</div>
+
+<hr>
+
+<script>
+ (() => {
+
+var message = document.getElementById("message");
   var recorder = new Recorder();
+  var capturer = new Capturer();
   var recordingStartTime;
   var timer;
 
@@ -35,30 +62,40 @@ window.onload = function(){
     message.innerHTML=txt = "";
   }
 
+  document.getElementById("captureStart").onclick = function(){
 
-}
+    document.getElementById("captureStart").disabled = true;
+    capturer.onCapture = (event) => {
+
+        console.log("onCapture");
+
+        var bufferCanvas = document.getElementById("captureViewCanvasBuffer");
+        var viewCanvas = document.getElementById("captureViewCanvas");
+
+        var bufferCanvasCtx = bufferCanvas.getContext('2d');
+        bufferCanvas.width = event.width;
+        bufferCanvas.height = event.height;
+        bufferCanvasCtx.drawImage(event, 0, 0);
+
+        var image = bufferCanvasCtx.getImageData(0, 0, bufferCanvas.width, bufferCanvas.height);
+        viewCanvas.width = bufferCanvas.width;
+        viewCanvas.height = bufferCanvas.height
+        var viewCanvasCtx = viewCanvas.getContext('2d');
+        viewCanvasCtx.putImageData(image, 0, 0);
+        document.getElementById("captureViewWrapper").style.display = "block";
+    }
+    capturer.startCaptureImage(300, 0.8);
+  }
+
+  document.getElementById("captureStop").onclick = function(){
+
+    if(capturer != null) { capturer.stopCapture(); }
+    document.getElementById("captureStart").disabled = false;
+    document.getElementById("captureViewWrapper").style.display = "none";
+  }
+
+})();
 </script>
-</head>
-<body style="margin:10px">
-
-<hr>
-
-<div>
-  <h4>Recording</h4>
-  <input type="button" id="start" value="start"> <input type="button" id="stop" value="stop">
-  <div id="elapsedTimeView" style="color:red;font-size:20px;font-weight: bold;margin-left:5px"></div>
-  <div id="message"></div>
-  <div id="debug"></div>
-</div>
-
-<hr>
-  
-<div>
-  <h4>Capturing</h4>
-  <input type="button" id="captureStart" value="start"> <input type="button" id="captureStop" value="stop">
-</div>
-
-<hr>
 
 </body>
 </html>
