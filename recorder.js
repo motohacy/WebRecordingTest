@@ -10,14 +10,14 @@ class Recorder {
 
   }
 
-  start() {
+  start(sliceMS) {
 
     this.debug("recording start.");
-    this.startRecording();
+    this.startRecording(sliceMS);
 
   }
 
-  async startRecording() {
+  async startRecording(sliceMS) {
 
     this.videoStream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
@@ -34,14 +34,13 @@ class Recorder {
 
     this.mediaRecorder.ondataavailable = (event) => {
 
+      this.debug("mediaRecorder.ondataavailable");
       if (event.data && event.data.size > 0) {
-
-        this.debug("dataavailable called.")
         this.download(new Blob([event.data], { type: event.data.type }));
       }
     }
-   
-    this.mediaRecorder.start();
+    this.debug("sliceMS:" + sliceMS);
+    this.mediaRecorder.start(sliceMS);
 
   }
 

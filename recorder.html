@@ -14,14 +14,20 @@
 
 <div>
   <h4>Recording</h4>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="slice" id="slice-minutes-60" value="60" checked="true">
+    <label class="form-check-label" for="slice-minutes-60">slice 60 minutes</label>
+   　<input class="form-check-input" type="radio" name="slice" id="slice-minutes-5" value="5">
+    <label class="form-check-label" for="slice-minutes-5">slice 5 minutes</label>
+    　<input class="form-check-input" type="radio" name="slice" id="slice-minutes-1" value="1">
+    <label class="form-check-label" for="slice-minutes-1">slice 1 minutes</label>
+  </div><br>
   <input type="button" id="start" value="start"> <input type="button" id="stop" value="stop">
   <div id="elapsedTimeView" style="color:red;font-size:20px;font-weight: bold;margin-left:5px"></div>
   <div id="message"></div>
   <div id="debug"></div>
 </div>
-
-<hr>
-  
+<hr> 
 <div>
   <h4>Capturing</h4>
   <input type="button" id="captureStart" value="start"> <input type="button" id="captureStop" value="stop">
@@ -44,8 +50,19 @@ var message = document.getElementById("message");
 
   document.getElementById("start").onclick = function(){
 
+    var sliceMS;
+    if(document.getElementById("slice-minutes-60").checked) {
+      sliceMS = 60 * 60 * 1000;
+    } else if (document.getElementById("slice-minutes-5").checked) {
+      sliceMS = 5 * 60 * 1000;
+    } else if (document.getElementById("slice-minutes-1").checked) {
+      sliceMS = 60 * 1000;
+    } else {
+      sliceMS = 60 * 60 * 1000;
+    }
+
     message.innerHTML=txt = "now recording...";
-    recorder.start();
+    recorder.start(sliceMS);
     document.getElementById("start").disabled = true;
     recordingStartTime = new Date().getTime();
     timer = setInterval( () => {
@@ -66,8 +83,6 @@ var message = document.getElementById("message");
 
     document.getElementById("captureStart").disabled = true;
     capturer.onCapture = (event) => {
-
-        console.log("onCapture");
 
         var bufferCanvas = document.getElementById("captureViewCanvasBuffer");
         var viewCanvas = document.getElementById("captureViewCanvas");
