@@ -22,10 +22,13 @@ class Recorder {
 
   start(sliceMS, saveMode) {
 
-    this.debug("recording start.");
-    this.debug("saveMode:" + this.saveMode);
     this.sliceMs = sliceMS;
     this.saveMode = saveMode;
+    this.saveStatus = null;
+    this.videoSize = 0;
+    this.debug("recording start.");
+    this.debug("saveMode:" + this.saveMode);
+    this.debug("sliceMs:" + this.sliceMs);
     if(this.saveMode == this.SAVEMODE_FILESYSTEM) {
       if (!window.chooseFileSystemEntries) {
         this.debug("Native File System is unavailable");
@@ -60,13 +63,13 @@ class Recorder {
       }
     }
 
-    this.mediaRecorder.start(this.sliceMS);
+    this.mediaRecorder.start(this.sliceMs);
 
   }
 
   async stopRecording() {
 
-     this.SAVE_STATUS = this.END;
+     this.SAVE_STATUS = this.SAVE_STATUS_END;
 
      if(this.combinedStream != null) { this.combinedStream.getTracks().forEach(track => track.stop());}
      if(this.audioStream != null) { this.audioStream.getTracks().forEach(track => track.stop());}
@@ -84,7 +87,7 @@ class Recorder {
 
   save(videoBlob) {
 
-    if(this.saveMode == 1) {
+    if(this.saveMode == this.SAVEMODE_FILESYSTEM) {
       this.saveFile(videoBlob);
     } else {
       this.download(videoBlob);
@@ -117,12 +120,13 @@ class Recorder {
       await this.writer.write(content);
     }
   
-    if(this.SAVE_STATUS == this.END) {
+    if(this.SAVE_STATUS == this.SAVE_STATUS_END) {
       await this.writer.close();
       this.writer = null;
       if(this.fileHandle != null) { 
            this.fileHandle = null;
            this.videoSize = 0;
+           this.debug("fileHandle close.");
       }
     }
 
