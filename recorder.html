@@ -15,6 +15,12 @@
 <div>
   <h4>Recording</h4>
   <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="save" id="filesystem" value="1" checked="true">
+    <label class="form-check-label" for="filesystem">filesystem(Native FileSystem API)</label>
+   　<input class="form-check-input" type="radio" name="save" id="download" value="2">
+    <label class="form-check-label" for="download">download</label>
+  </div><br>
+  <div class="form-check form-check-inline">
     <input class="form-check-input" type="radio" name="slice" id="slice-minutes-60" value="60" checked="true">
     <label class="form-check-label" for="slice-minutes-60">slice 60 minutes</label>
    　<input class="form-check-input" type="radio" name="slice" id="slice-minutes-5" value="5">
@@ -61,8 +67,15 @@ var message = document.getElementById("message");
       sliceMS = 60 * 60 * 1000;
     }
 
+    var saveMode;
+    if(document.getElementById("filesystem").checked) {
+      saveMode = 1;
+    } else {
+      saveMode = 2;
+    }
+
     message.innerHTML=txt = "now recording...";
-    recorder.start(sliceMS);
+    recorder.start(sliceMS, saveMode);
     document.getElementById("start").disabled = true;
     recordingStartTime = new Date().getTime();
     timer = setInterval( () => {
